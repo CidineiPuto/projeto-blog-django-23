@@ -1,0 +1,12 @@
+Primeiramente vamos criar um repositório git.
+
+vamos iniciar o git;
+
+git init
+
+Depois vamos adicionar ele, com;
+
+git remote add origin repositório
+
+Depois vamos o iniciar
+git push -u origin main
