@@ -10,3 +10,15 @@ git remote add origin repositório
 
 Depois vamos o iniciar
 git push -u origin main
+
+Depois disso, podemos usar apenas
+git push
+
+Para publicar.
+
+Mas agora, vamos criar o .gitignore.
+Pode procurar no google
+
+.gitignore django
+
+Ou pode pegar da aula.
