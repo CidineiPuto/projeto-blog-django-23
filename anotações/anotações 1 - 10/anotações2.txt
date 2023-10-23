@@ -1,0 +1,33 @@
+Vamos instalar o django com o pip.
+Com o django instalado, iremos utilizar o docker. Então a pasta raiz não vai ser a raiz
+do projeto django, irá ter as configurações do docker em si, então vamos criar uma pasta
+chamada "djangoapp", que irá sim ser a raiz do projeto
+
+Vamos entrar no djangoapp, e usar;
+
+django-admin startproject project .
+
+Toda vez que precisar executar o manage.py, iremos usar;
+
+
+python djangoapp/manage.py (comando)
+python djangoapp/manage.py runserver
+
+Se for usar o docker, iremos apagar o arquivo "db.sqlite3" criado após usarmos o runserver
+se não for usar o docker, não precisa o apagar.
+
+Isso, é pois vamos usar direto o postgree no docker.
+
+Dentro do django app vamos criar o requirements.txt, para instalar as coisas que vamos
+usar dentro do container do docker.
+Vamos colocar o django, e colocar;
+
+Django>=4.2.1,<4.3
+Para que ele não atualize mais do que a versão 4.2.9.
+
+Outra coisa, dentro do container vamos usar psycopg2-binary>=2.9.6,<2.10
+
+psycopg, é algo que o django utiliza para fazer a comunicação com o postgree sql.
+
+Vamos usar o .dockeignore, para não mover coisas que não iremos querer para dentro do 
+nosso container.
