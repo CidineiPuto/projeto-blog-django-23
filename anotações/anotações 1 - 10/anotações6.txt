@@ -3,3 +3,96 @@ O container do docker, é como se fosse um ambiente virtual bem desenvolvido.
 No momento temos dois containers, o psql, e o djangoapp. É como se os dois fosse
 dois linux diferentes.
 E não é possível  executar comandos fora do container.
+
+Para executar os comandos vamos usar;
+
+docker-compose run --rm djangoapp ( comando a ser usado, ex: python -V ) 
+
+Vamos usar isso, quando o container está desligado.
+
+Ou pode usar o shell  também;
+
+
+docker-compose run --rm djangoapp /bin/sh -c 'echo $PATH' <-- Vê o caminho da variável do sistema
+docker-compose run --rm djangoapp /bin/sh -c 'echo $SECRET_KEY' <-- Vê a SECRET_KEY
+
+também tem;
+
+docker-compose run --rm djangoapp pwd
+
+
+
+Se usar, docker exec -it djangoapp sh, ele não irá encontrar o container
+pois está tentando entrar dentro do container, algo que não é muito comum.
+Por isso, o container tem que estar up;
+
+docker-compose up
+
+EM OUTRO TERMINAL
+
+docker exec -it djangoapp sh
+
+Agora, ele entra de maneira iterativa dentro do container, abrindo o shell dele, permitindo
+você executar comandos.
+
+Isso só será usado se você quer ver algo bem específico, mas é muito raro ter que entrar
+dentro do container.
+
+Outra forma de executar os comandos é;
+
+Primeiramente, vamos parar o container.
+Agora, dentro da página scripts, digamos que iremos executar o comando "collectstatic"
+Então, vamos criar um arquivo chamado "collectstatic.sh"
+Criado o script, irá copiar e colar o comando;
+Depois, irá executar o collect static.sh, isso dentro do commands.sh;
+
+
+    collectstatic.sh
+    python manage.py migrate --noinput
+    python manage.py runserver 0.0.0.0:8000
+
+E se quiser pode fazer isso com tudo.
+Mas lembre de colocar;
+
+#!/bin/sh
+
+Antes de cada comando que irá executar, aliás, agora terá que buildar novamente nosso
+container.
+Irá ficar assim;
+
+    #!/bin/sh
+
+    # O shell irá encerrar a execução do script quando um comando falhar
+    set -e
+
+    wait_psql.sh
+    makemigrations.sh
+    migrate.sh
+    runserver.sh
+
+E agora, ao invés de ter que executar muita coisa, só usar;
+
+docker-compose run --rm djangoapp commands.sh
+
+E assim é executado o collectstatic.
+
+Podemos até colocar o makemigrations.sh dentro do migrate.sh;
+
+    #!/bin/sh
+    makemigrations.sh
+    python manage.py migrate --noinput
+
+E iremos apagar o makemigrations.sh de dentro do commands.sh, deixando só o migrate.sh,
+e depois usar;
+
+docker-compose up --build
+
+e agora pode usar;
+
+docker-compose run --rm djangoapp migrate.sh
+
+E se quiser ver o que está acontecendo pode colocar;
+
+echo 'Executando (nome).sh'
+
+Assim, ele irá enviar uma mensagem de print, do que está acontecendo.
