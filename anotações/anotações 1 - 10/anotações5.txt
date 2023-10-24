@@ -20,3 +20,89 @@ depends_on:
   -  psql
 
 Mas agora, vamos buildar o nosso arquivo.
+
+Vamos usar;
+
+docker-compose up --build <-- Isso na primeira vez.
+
+Será possível perceber algo.
+Dentro do .env, tem que colocar no postgree_host, o psql
+Ele será interessante no servidor mas não no docker, pois o docker compose faz
+a comunicação, e como estamos puxando as variáveis de arquivo env. E já que o djangoapp
+está comunicando com o psql, o psql é o nome do container.
+
+Agora, use;
+
+docker-compose up --build
+
+Toda vez que fizer alguma alteração em dockerfile, dockercompose, e variáveis de ambiente
+é recomendável fazer;
+
+docker-compose up --build --force-recreate
+
+Lá no commands.sh, iremos primeiramente retirar o & da frente do waiting for postgres.
+E aumentar o tempo de "0.1" para 2 segundos.
+Porém, ele está perguntando algo e gerando um erro, então na frente do collectstatic
+e do migrate, irá ter que colocar "noinput" e antes do migrate colocar o "makemigrations";
+
+python manage.py collectstatic --noinput
+python manage.py makemigrations --noinput
+python manage.py migrate --noinput
+python manage.py runserver 0.0.0.0:8000
+
+Aliás, o runserver precisa deste 0.0.0.0:8000
+pois tem que informar que ele aceite conexões de outros ips.
+Já que o padrão seria "127.0.0.1" e isso não funciona já que ele aponta para dentro
+do container.
+
+Agora, caso queira começar do 0 e não conseguir executar aquele comando, 
+primeiro iremos usar
+
+docker ps -a
+
+Iremos apagar utilizando o container id.
+
+então, iremos usar
+
+docker rm (3 primeiros dígitos dos ids)
+
+Depois vamos usar;
+
+docker ps -a
+
+Para ver se há mais algo.
+Agora que apagou os containers, iremos fazer;
+
+docker image ls <-- Lista a imagem
+docker image rm / docker rmi (3 primeiros dígitos dos ids) <-- qualquer um funciona
+
+Agora só executar;
+
+
+docker-compose up --build
+
+Podemos acessar o site com;
+
+127.0.0.1:8000
+
+É possível ver que uma pasta data foi criada em seu projeto.
+E se você apagar esta pasta, ele irá recriar várias coisas.
+
+Lembra que se mexer em algumas coisas, como docker-compose, .env e etc. Terá que fazer
+o "docker-compose up --build".
+
+E pode fazer;
+
+docker-compose up
+
+Assim irá subir sua aplicação.
+
+E pode fazer;
+
+docker-compose up -d
+
+Assim irá executar, mas não irá travar o terminal.
+
+Se quiser desligar o container, só usar;
+
+docker-compose down

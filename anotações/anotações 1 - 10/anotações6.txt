@@ -1,0 +1,5 @@
+O container do docker, é como se fosse um ambiente virtual bem desenvolvido.
+
+No momento temos dois containers, o psql, e o djangoapp. É como se os dois fosse
+dois linux diferentes.
+E não é possível  executar comandos fora do container.
