@@ -1,0 +1,118 @@
+Vamos começar a trabalhar no docker.
+Na raiz do projeto, vamos criar um arquivo chamado;
+
+DockerFile
+
+No DockerFile, vamos informar qual imagem vamos utilizar como base;
+
+FROM python:3.11-apine3.18
+
+Vamos usar como base a imagem do python 3.11 utilizando o apine 3.18.
+O apine, é uma versão do linux bem leve,pequena e segura, utilizada em imagens do docker.
+Mas caso queira utilizar outras imagens, pode ir no;
+https://hub.docker.com/_/python
+
+Irá encontrar as imagens oficiais do python que poderá usar.
+
+LABEL mantainer='seu email, ou site, ou github'
+
+Vamos colar as configurações do DockerFile, encontradas na aula 518 na seção 12.
+E agora, vamos criar uma pasta na raiz do projeto, chamada "scripts"
+Lá vamos colocar scripts para os executar dentro do container.
+
+Iremos copiar também algo chamado RUN.
+
+
+RUN python -m venv /venv && \
+
+Aqui, ele executa python -m venv /venv, criando um ambiente virtual dentro da
+imagem na raiz, já o && \ indica que irá ter mais linhas, seria como uma ","
+
+  /venv/bin/pip install --upgrade pip && \
+
+Aqui é possível perceber que não ativamos o ambiente, apenas entramos nele e utilizamos
+o pip, pois quando está gerando a imagem ainda, não iremos ter ele ativado.
+E vamos colocar a /venv/bin no path do sistema.
+
+  /venv/bin/pip install -r /djangoapp/requirements.txt && \
+
+Agora, ele instala as coisas dentro do requirements.txt, dentro do djangoapp.
+
+  adduser --disabled-password --no-create-home duser && \
+
+Agora, isso cria um usuário chamado "duser". O disabled password, irá dizer que ele
+não possui senha, e o --no-create-home, irá fazer com que não seja criado algo na home
+dele.
+
+  mkdir -p /data/web/static && \
+  mkdir -p /data/web/media && \
+
+Aqui ele cria os arquivos media e static.
+
+  chown -R duser:duser /venv && \
+  chown -R duser:duser /data/web/static && \
+  chown -R duser:duser /data/web/media && \
+
+O chown, muda o owner dessas pastas, deixando este usuário com permissões.
+
+  chmod -R 755 /data/web/static && \
+  chmod -R 755 /data/web/media && \
+
+E aqui, muda as permissões dessa pasta para 755
+
+  chmod -R +x /scripts
+
+E a pasta scripts, estamos adicionando um +x para tudo que tiver dentro dessa pasta.
+Pois iremos criar arquivos dentro do scripts que será executável, de maneira que ele tente
+executar os arquivos que estão lá.
+
+Agora iremos usar isso;
+
+# Adiciona a pasta scripts e venv/bin 
+# no $PATH do container.
+ENV PATH="/scripts:/venv/bin:$PATH"
+
+Isso faz com que não precise usar o ambiente virtual. Já que ele irá pesquisar o
+/scripts:/venv/bin:$PATH, quando digitarmos qualquer coisa no script.
+
+# Muda o usuário para duser
+USER duser
+
+Aqui ele muda o usuário, para não trabalhar como root dentro do linux. Mas iremos executar
+algumas coisas como root, por isso só agora foi mudado o user.
+
+# Executa o arquivo scripts/commands.sh
+CMD ["commands.sh"]
+
+Agora, se criar esse arquivo commands.sh, ele irá encontrar esse arquivo e o executar.
+
+Então vamos criar o arquivo chamado commands.sh
+Primeiro iremos colocar;
+
+#!/bin/sh
+
+Para que ele tente executar esse arquivo com /bin/sh no linux.
+
+E depois vamos configurar o shell para que ele encerre caso ocorra algum erro
+no script.
+
+Agora vamos usar um comando para que o shell espere, até que o postgree sql
+esteja ativo e funcionando, para continuar a execução;
+
+while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
+  echo "🟡 Waiting for Postgres Database Startup ($POSTGRES_HOST $POSTGRES_PORT) ..." &
+  sleep 0.1
+done
+
+echo "✅ Postgres Database Started Successfully ($POSTGRES_HOST:$POSTGRES_PORT)"
+
+E agora, vamos fazer um collect static, e um migrate, depois vamos subir o servidor;
+
+python manage.py collectstatic
+python manage.py migrate
+python manage.py runserver
+
+Esse commands, como foi colocado como CMD dentro do docker file, ele vai ser executado
+sempre que utilizarmos docker compose up.
+Por enquanto, irá ser isso.
+

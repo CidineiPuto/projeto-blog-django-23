@@ -1,0 +1,22 @@
+toda hora que alterar alguma coisa no docker file, você terá que buildar ele.
+
+Agora, vamos criar um arquivo chamado "docker-compose.yml", para criar uma base de dados
+postgree.sql
+
+Vamos criar algo chamado service, que será os serviços do django.
+Terá o container djangoapp, o build irá mostrar aonde está os arquivos do djangoapp.
+Mas se colocar o 
+contex: .
+Irá já fazer com que procure um DockerFile, na pasta aonde foi mostrado o build, que seria
+a pasta raiz.
+Irá ter o mapeamento de portas, e de volumes.
+O build, serve para construir uma imagem de maneira que você queira, mas
+a base de dados, já é algo que já está construido.
+
+Para comunicar djangoapp com psql, então, dentro do djangoapp que depende dele, iremos
+colocar o;
+
+depends_on:
+  -  psql
+
+Mas agora, vamos buildar o nosso arquivo.
