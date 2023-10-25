@@ -1,0 +1,12 @@
+Agora vamos colocar na base.html uma header, uma pagination e uma footer;
+
+
+<body>
+    <h1>HEADER</h1>
+    {% block content %}{% endblock content %}
+    <h1>PAGINATION</h1>
+    <h1>FOOTER</h1>
+</body>
+
+Essas áreas vão ser criadas em partials. com _header.html, _pagination.html e _footer.html
+E agora só fazer os includes
