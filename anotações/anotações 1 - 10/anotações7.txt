@@ -1,0 +1,81 @@
+primeiramente vamos criar nosso super user.
+
+docker-compose run --rm djangoapp python manage.py createsuperuser
+
+Após a criação do superuser é só tentar iniciar o administrativo do django.
+
+Agora, vamos criar um app, chamado de block;
+
+
+iremos usar;
+
+
+docker-compose run --rm djangoapp python manage.py startapp blog
+
+Dentro da pasta blog criada vamos criar duas pastas a templates, e a static.
+A pasta static e template precisam ir para o repositório, então certifique se elas não
+estão sendo ignoradas.
+
+Dentro de static, vamos criar um arquivo com o nome:
+
+blog/css/styles.css
+
+Vamos colocar um;
+
+body {
+    background-color: red;
+}
+
+Para ver se está funcionando.
+
+Já no templates vamos criar um;
+
+blog/pages/index.html
+
+E vai ter outra pasta no blog do templates chamada de partials
+E dentro do blog vamos criar um arquivo chamado "base.html"
+
+Lá será o arquivo que vamos passar para todos os outros.
+
+O index.html vai ter um extends.
+
+Dentro da views vamo definir uma view com nome de index.
+
+    def index(request):
+        return render(
+            request,
+            'blog/pages/index.html',
+        )
+
+Agora dentro de blog (app) vamos criar um urls.py
+Nessa url vamos fazer o seguinte:
+
+
+    from blog.views import index
+    from django.urls import path
+
+    app_name = 'blog'
+
+    urlpatterns = [
+        path('', index, name='index'),
+    ]
+
+
+Agora dentro da urls.py do project vamos incluir o blog, desta maneira;
+
+urlpatterns = [
+    path('', include('blog.urls')),
+    path('admin/', admin.site.urls),
+]
+
+
+E dentro de installed apps vamos registrar o app chamado blog, isso dentro do settings;
+
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        ...
+        'blog',
+    ]
+
+
