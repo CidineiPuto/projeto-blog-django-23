@@ -1,0 +1,16 @@
+Dentro da head do site em base.html, vamos retirar ela e no partials criar um arquivo
+chamado "_head.html" e depois dar um include.
+
+<head>
+    {% include "blog/partials/_head.html" %}
+</head>
+
+E agora vamos fazer o seguinte dentro do _head;
+
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "blog/css/style.css" %}">
+    <title>Testando</title>
+
+
