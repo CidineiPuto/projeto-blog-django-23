@@ -1,0 +1,38 @@
+Agora, iremos fazer com que tenha outra coisa no site_setup, chamado setup,
+e vamos fazer com que este menu link pertença ao setup.
+
+Vamos criar um novo model desta maneira;
+
+
+class SiteSetup(models.Model):
+    class Meta:
+        verbose_name = 'Setup'
+        verbose_name_plural = 'Setup'
+
+    title = models.CharField(max_length=65)
+    description = models.CharField(max_length=255)
+    show_header = models.BooleanField(default=True)
+    show_search = moddels.BooleanField(default=True)
+    show_menu = models.BooleanField(default=True)d
+    show_description = models.BooleanField(default=True)
+    show_pagination = models.BooleanField(default=True)
+    show_footer = models.BooleanField(default=True)
+
+Após isso, vamos fazer a migração
+
+docker-compose run --rm djangoapp migrate.sh
+
+E agora vamos colocar ele na parte admin;
+
+
+@admin.register(SiteSetup)
+class SiteSetupAdmin(admin.ModelAdmin):
+    list_display = 'title', 'description',
+
+Vamos fazer uma configuração com que a pessoa só consiga adicionar apenas um setup;
+
+    def has_add_permission(self, request):
+        return not SiteSetup.objects.exists()
+
+Nós pegamos tudo isso para ver se possui algum objeto na base de dados.
+Porém, a pessoa pode adicionar outro setup caso queira.
