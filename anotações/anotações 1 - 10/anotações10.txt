@@ -1,0 +1,43 @@
+Vamos criar um app para algumas configurações relacionadas ao site.
+Porém ele não irá ter nada a ver com o blog, ele apenas será as configurações do site.
+
+docker-compose run --rm djangoapp python manage.py startapp site_setup
+
+Vamos fazer algo para que a pessoa irá poder fazer certas configurações no site.
+Iremos começar criando um model, dentro do site_setup.
+
+
+
+    text = models.CharField(max_length=50) <-- Isso aqui irá ser o texto do link
+    url_or_path = models.CharField(max_length=2048) <-- Isso aqui será o caminho do link
+
+    Isso serve para colocar o id, link, e etc. Podendo colocar qualquer coisa que sirva
+    como link.
+
+    new_tab = models.BooleanField(default=False) <-- Apenas se a pessoa clicar, será aberto
+    em uma nova aba. 
+
+    def __str__(self):
+        return self.text
+Vamos registrar o nome do nosso app "site_setup" dentro do settings.
+
+INSTALLED_APPS = [
+    ...
+    'blog',
+    'site_setup',
+]
+
+Agora vamos usar; 
+
+docker-compose run --rm djangoapp migrate.sh
+Agora, iremos no admin.py dentro do site_setup, e criar o seguinte;
+
+    @admin.register(MenuLink)
+    class MenuLinkAdmin(admin.ModelAdmin):
+    list_display = 'id', 'text', 'url_or_path',
+    search_fields = 'id', 'text', 'url_or_path',
+    list_display_links = 'id', 'text', 'url_or_path', <- Links para acessar o site
+
+
+Agora é possível adicionar o texto do link e a url do link.
+Se criar isto e voltar é possível perceber que foi criado o link.
