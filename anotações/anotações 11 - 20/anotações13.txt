@@ -1,0 +1,79 @@
+Vamos usar context processors, algo que é encontrado no settings do project.
+Para injetar valores em todos os templates que possuímos.
+Se quer saber quem é o usuário logado por exemplo;
+
+    <h1>Exemplo: {{ request.user }}</h1>
+
+Isso, sem usar o context em si. Para mostrar-mos algo sem usar os request, é algo
+chamado "context processors".
+Se viermos no site_setup, vamos criar um novo módulo com o nome de "context_processor.py".
+
+def context_processor_example(request):
+    return {
+        '...'
+    }
+
+SE definirmos uma função, desta maneira, a chave retornada, é o que vai para o template.
+Então, se for um;
+
+[
+    def context_processor_example(request):
+    return {
+        'example': 'Veio do context processor (example)"
+    }
+]
+
+Terá que ir lá no settings e registrar ele dentro do context_processor;
+
+        'OPTIONS': 
+            'context_processors': [
+                'django.template.context_processors.debug',
+                ...
+                'site_setup.context_processor.context_processor_example'.
+            ],
+
+E agora;
+
+
+<h1>HEADER: {{ example }} </h1>
+
+Logo, é possível ver o processor funcionando.
+E como vimos, a view não possui nenhum context, por isso, é algo bem interessante nesses
+casos, aonde precisamos de algo disponível em todos os templates.
+Colocando esses context processors dentro do django, é possível aplicar isso em todos os
+templates em todos os apps do django.
+Mas tome cuidado com a chave do context_processor para que não seja algo comum, exemplo;
+
+def site_setup(request):
+    return {
+        'site_setup': {
+            'title': 'Título'
+        }
+    }
+
+Após adicionar o site setup no settings, podemos usar dentro da base.html o seguinte;
+
+<body>
+    <h1>Exemplo: {{ site_setup.title }}</h1>
+...
+
+Porém, vamos fazer algo de maneira dinâmica, então vamos importar o module do site_setup.
+Dentro do context;
+
+def site_setup(request):
+    setup = SiteSetup.objects.order_by('-id').first()
+    return {
+        'site_setup': setup,
+    }
+
+Dentro do base.html;
+
+    <h1>Exemplo: {{ site_setup.title }}</h1>
+
+Agora, isto é dinâmico.
+se caso retirar o .first() e colocar um "print(setup.query)"
+É possível ver uma grande consulta, então, é bom ter certeza se você vai querer
+utilizar algo deste tipo. É recomendável usar context_processor apenas com coisas
+bem utéis que poderá aparecer no site inteiro.
+
+
