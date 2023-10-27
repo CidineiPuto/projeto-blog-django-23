@@ -1,0 +1,43 @@
+Agora iremos fazer a relação com menu link e setup. Essas relações são relacionamentos
+com base de dados.
+Vamos fazer com que site setup tenha menu link.
+Um site setup, possui 1 ou muitos links.
+
+A relação vem de menulink para site setup.
+Quem vai ter a chave estrangeira do site setup é o menulink.
+
+No menu link vamos fazer o seguinte;
+
+    site_setup = models.ForeignKey(
+        'SiteSetup', on_delete=models.CASCADE, blank=True, null=True,
+        default=None,
+    )
+
+Ele pode existir como null, o menulink. Porém, caso for ligado com um SiteSetup e este
+SiteSetup for apagado, ele também será.
+Agora, fazer a migração;
+
+
+docker-compose run --rm djangoapp migrate.sh
+
+Agora se for adicionar menulink é possível ver um setup.
+E agora, podemos fazer com que de dentro do setup, podemos fazer com que a pessoa
+consiga adicionar links. Aparecer em linhas o menulink, para poder editar já pelo
+setup. 
+Primeiro vamos apagar nosso setup, e lembre que o delete está no modo cascade.
+Vamos criar uma nova classe no admin, para o inline que iremos exibir no setup;
+
+    class MenuLinkInLine(admin.TabularInline):
+        model = MenuLink
+
+Agora, para lincar o inline com o site setup admin, é só fazer isto dentro do class
+setup admin;
+
+    inlines = MenuLinkInLine,
+
+E agora pode já adicionar e editar os adicionados.
+Porém, podemos tirar os 3 extras, é só fazer isto;
+
+class MenuLinkInLine(admin.TabularInline):
+    model = MenuLink
+    extra = 1
