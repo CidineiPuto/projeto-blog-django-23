@@ -1,0 +1,70 @@
+Agora iremos redimensionar esta imagem.
+No nosso caso, não iremos deixar o usuário mandar jpg, ou etc. Apenas png.
+Pois só iremos querer receber imagens do tipo png.
+Vamos criar um validador para isto.
+
+IRemos criar um package python, dentro do djangoapp chamado utils. E dentro dele
+vamos criar algo chamado "model_validators.py"
+
+
+def validante_png(image):
+    if not image.name.lower().endswith('.png'):  # endswith seria, termina com ...
+        print('Atatata')
+
+Claro que iremos fazer algo depois.
+
+    favicon = models.ImageField(
+        upload_to='assets/favicon/%Y/%m/',
+        blank=True, default='',
+        validators=[validate_png]
+    )
+
+Mas agora para fazer com que não salve isto no módulo, só levantarmos uma exceção
+de validação;
+
+from django.core.exceptions import ValidationError
+
+
+def validate_png(image):
+    if not image.name.lower().endswith('.png'):
+        raise ValidationError('Imagem precisa ser png.')
+
+Agora vamos criar um módulo com o nome de images.py, dentro do utils.
+Porém, é possível perceber um erro no vsc, já que não instalamos o pillow no
+venv. Por isso devemos usar;
+
+pip install Pillow==9.5.0
+
+No terminal.
+
+Agora, no código usado em images.py;
+
+    image_path = Path(settings.MEDIA_ROOT / image_django.name).resolve()
+
+O resolve serve para "resolver" o caminho.
+Agora no models vamos criar uma função chamada save;
+
+    def save(self, *args, **kwargs):
+        
+        super().save(*args, **kwargs)
+
+Para saber se o favicon foi alterado, iremos fazer o seguinte;
+
+    def save(self, *args, **kwargs):
+        current_favicon_name = str(self.favicon.name)        
+        super().save(*args, **kwargs)
+        favicon_changed = False
+        
+        if self.favicon:
+            favicon_changed = current_favicon_name != self.favicon.name
+
+
+O current_favicon, é antes do mesmo ser salvo, e depois que ele é salvo, o nome irá mudar
+se ele for alterado. Por isso, é possível saber se isso ocorreu.
+Agora, que sabemos se a imagem foi alterada ou não, iremos importar aquela função, e a usar;
+
+
+from utils.images import resize_image
+
+        if favicon_changed:
+            resize_image(self.favicon, 32)

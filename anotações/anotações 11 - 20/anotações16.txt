@@ -1,0 +1,79 @@
+Iremos no django app, e agora no blog. Logo vamos no css, styles.css
+
+Mas vamos usar um reset de css mais estruturado, procurar apenas por "css remedy"
+Vai em css, depois em remedy, e agora só copiar o css inteiro, iremos criar o 
+remedy.css, e colar tudo lá.
+Dentro do head, vamos duplicar o nosso link estático, e colocar isto;
+
+<link rel="stylesheet" href="{% static "blog/css/remedy.css" %}">
+
+No style.css, iremos criar uma modificação do body;
+
+:root {
+    --clr-white: hsl(213 100% 98%)
+    --clr-primary: hsl(213 100% 50%)
+    --clr-black: hsl(213 100% 5%)
+}
+
+body {
+    background-color: var(--clr-white);
+    color: var(--clr-black);
+}
+
+Ou pode fazer o seguinte;
+
+:root {
+    --clr-white: 213 100% 98%;
+    --clr-primary: 213 100% 50%;
+    --clr-black: 213 100% 5%;
+}
+
+body {
+    background-color: hsl(var(--clr-primary));
+    color: hsl(var(--clr-black));
+}
+
+Geralmente quando está trabalhando com css, é recomendável ter vários tons de certa cor.
+Então normalmente é comum mexer na opacidade.
+Por exemplo;
+
+:root {
+    --clr-white: 213 100% 98%;
+    --clr-primary: 213 100% 50%;
+    --clr-black: 213 100% 5% / 0.5; <-----
+}
+
+Porém, aonde precisar da opacidade, pode fazer o seguinte;
+
+:root {
+    --clr-white: 213 100% 98%;
+    --clr-primary-base: 213 100% 50%;
+    --clr-primary-ltr: 213 100% 50% / 0.8; <----- ltr = lighter
+    --clr-black: 213 100% 5%
+}
+
+
+Ou pode fazer isto;
+
+:root {
+    --clr-white: 213 100% 98%;
+    --clr-primary-base: 213 100% 50%;
+    --clr-black: 213 100% 5%
+}
+
+body {
+    background-color: hsl(var(--clr-primary) / 0.8 ); <--
+    color: hsl(var(--clr-black));
+}
+
+Agora, iremos arrumar sobre a fonte;
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+

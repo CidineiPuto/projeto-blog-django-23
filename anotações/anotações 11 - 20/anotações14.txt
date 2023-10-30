@@ -1,0 +1,39 @@
+Agora, vamos dar a possibilidade para a pessoa conseguir enviar o favicon para o seu blog.
+Terá que enviar a imagem, depois colocar a imagem na página. Porém, vamos tentar fazer
+com que seja possível enviar apenas certo tamanho de imagem.
+
+Vamos ir no models em site_setup.
+
+    favicon = models.ImageField(
+        upload_to='assets/favicon/%Y/%m',
+        blank=True, default='',
+    )
+
+E adicionar o favicon, depois, iremos ter que criar  esta pasta.
+Além disso, terá que instalar o pillow por conta da imagem, mas por estar utilizando
+docker, podemos procurar o pillow e a versão, depois vamos em requirements.txt e adicionar
+isto;
+
+Pillow>=9.5.0,<9.6
+
+Agora, vamos fazer a build do projeto.
+Após a build ser feita, provavelmente as migrações serão feitas também.
+Agora, é possível ver o favicon lá dentro do setup.
+Dentro do _head, podemos criar o seguinte;
+
+
+<link rel="shortcut icon" href="{{ site_setup.favicon.url }}" type="image/png">
+
+Agora, já é possível ver o favicon.
+Caso um erro ocorra, apenas escreva o seguinte no urls.py do project;
+
+if settings.DEBUG:
+
+from django.conf import settings
+from django.conf.urls.static import static
+
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT,)
+
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)
