@@ -1,0 +1,47 @@
+Agora, vamos ver qual página iremos precisar em nosso blog.
+No templates possuímos blog/pages, logo, iremos criar algumas coisas. A primeira,
+será a página de index, aonde iremos criar várias páginas do post.
+No index irá ter, categories, tags, busca, busca por usuário, busca por
+qualquer coisa em si.
+Porém, iremos ter mais 2 páginas, o que será os detalhes do post, que será o post.html.
+Depois, vamos criar uma de página, que será chamada de page.html.
+
+Index - Lista de posts
+Post - Posts
+page - páginas
+
+No partials, iremos retirar o _temp, um tempo depois. E provavelmente, iremos
+colocar um post item. Então iremos criar mais coisas dentro do partials.
+
+Pra carregar as páginas, dentro do views vamos fazer o seguinte;
+
+def index(request):
+    return render(
+        request,
+        'blog/pages/index.html'
+    )
+
+
+def page(request):
+    return render(
+        request,
+        'blog/pages/page.html'
+    )
+
+
+def post(request):
+    return render(
+        request,
+        'blog/pages/post.html'
+    )
+
+Agora, iremos criar as urls;
+
+urlpatterns = [
+    path('', index, name='index'),
+    path('post/', post, name='post'),
+    path('page/', page, name='page'),
+]
+
+
+

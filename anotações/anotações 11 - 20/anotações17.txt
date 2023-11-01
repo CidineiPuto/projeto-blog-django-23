@@ -66,4 +66,5 @@ O;
   text-rendering: optimizeLegibility;
 
 Foi usado para que o texto seja bem melhor legível.
+
 O pre, seria aonde iremos colocar códigos.
