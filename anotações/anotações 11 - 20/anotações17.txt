@@ -1,0 +1,69 @@
+Foi criado algo, um partial, com o nome de; 
+
+_temp.html
+
+Dentro dele foi colocado várias coisas retirada do site,
+
+https://loripsum.net
+
+Nisso, poderá gerar vários e vários tipos de tags html, o que pode ajudar na estilização
+do site.
+Depois disso, deixe o body assim;
+
+<body class="dark-theme">
+    {% include "blog/partials/_header.html" %}
+    {% block content %}{% endblock content %}
+    {% include "blog/partials/_pagination.html" %}
+    {% include "blog/partials/_footer.html" %}
+    {% include 'blog/partials/_temp.html' %}
+</body>
+
+O _temp, seria um arquivo temporário apenas para ajudar a fazer o layout, que iremos
+colocar dentro de algum lugar do site.
+Serve para ver os links, imagens e etc. Sobre imagens, é recomendável usar
+para gerar imagens aleatórias;
+
+<img src="https://picsum.photos/1920/1080/?rand=1"  
+<img src="https://picsum.photos/1920/1080/?rand=2"  
+<img src="https://picsum.photos/1920/1080/?rand=3"  
+
+O rand vai mudar sempre possuindo o número da imagem.
+
+Para fazer o blog, podemos ver vários outros blogs, e puxar coisas mais em comum
+neles.
+
+No ":root { clr-base }" É possível ver que não possui lightness.
+Porém, nos outros, exemplo, clr-white, clr-black... Eles possui lightness diferentes.
+A cor primária está dividida em;
+
+lt, ltr, ltst = light, lighter, lightest
+dk, dkr, dkst = dark, darker, darkest
+
+Font-Sizes é utilizado por clamp.
+
+E foi usado este site;
+
+https://royalfig.github.io/fluid-typography-calculator/
+
+Começa colocando a menor fonte que você quer, depois o menor tamanho do viewport
+Logo vem, a maior fonte que você quer, depois o maior viewport.
+Possui a fonte, smlst, smlr, sm, smallest, smaller, small, e a mesma coisa serve com
+o bg.
+
+Também, tem o line height.
+Os spacings, que seria os paddings, margins e etc.
+
+E também, tem o max-width. O mw da grid seria 1200 de altura. Já no post, seria
+900 pixels de largura apenas.
+Por conta do clamp ser algo mais novo tem chance de não funcionar em certos navegadores
+por issso foi usado o font-size: 20px.
+
+
+O;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+Foi usado para que o texto seja bem melhor legível.
+O pre, seria aonde iremos colocar códigos.
