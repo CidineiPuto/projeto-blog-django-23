@@ -1,0 +1,81 @@
+No site_setup, possuímos um context processor. Podemos jogar dentro do
+_header o título do site.
+
+      <h1 class="blog-title center pb-base">
+        <a class="blog-link" href="/"> {{ site_setup.title }} </a>
+      </h1>
+
+Também podemos retirar da description o texto de lorem ipsum, e colocar a descrição
+do site setup;
+
+      <p class="blog-description pb-base center">
+        {{ site_setup.description }}
+      </p>
+
+E na footer também, podendo fazer da seguinte forma;
+
+        <div class="center">
+          © {% now "Y" %} {{site_setup.title}} - Todos os direitos reservados.
+        </div>
+
+Em que "Y" seria igual a "Year / ano".
+
+Agora, vamos apagar isto;
+
+          <li class="menu-item">
+            <a class="menu-link" href="/post/">Post</a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="/page/">Page</a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">About us</a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">Contact</a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">Support</a>
+          </li>
+
+Podemos deixar só um, em sua preferência.
+Se observar o model so setup é possível perceber que estamos pegando setup e menulinks
+porém, não temos nenhum campo no setup que aponta para o menu. Apenas um dentro do menu que
+aponta pro site setup. Para selecionar dos pais os filhos (relação inversa)
+é  permitido pegar do site_setup algo chamado "menulink_set" isso é um conjunto que retorna
+uma query set. Vamos usar o ".all". É possível ver todos os menu links que o pai possui.
+E também podemos fazer um for nisto.
+
+          {% for link in site_setup.menulink_set.all %}
+            <li class="menu-item">
+              <a class="menu-link" href="{{ link.url_or_path }}">
+                {{ link.text }}
+              </a>
+            </li>
+          {% endfor %}
+
+Também, podemos fazer o "link.new_tab".
+
+          <li class="menu-item">
+            {% if link.new_tab %}
+                <a target="_blank" class="menu-link" href="{{ link.url_or_path }}">
+                  {{ link.text }}
+                </a>
+            {% else %}
+                <a class="menu-link" href="{{ link.url_or_path }}">
+                  {{ link.text }}
+                </a>
+            {% endif %}
+        </li>
+
+O "_blank" faz com que se eles abrirem com new_tab podem abrir em outra aba.
+Outra coisa que podemos fazer é colocar na head o seguinte;
+
+    <title>{{ site_setup.title }}</title>
+
+No caso, isso dentro da "_head".
+E dentro do base.html, vamos arrumar a parte do "show" show header e etc.
+
+Na "_header" vamos ir e colocar " if show_header " e " if show_menu "
+
+E o show description no header também.
