@@ -1,0 +1,97 @@
+Para os models do blog podemos começar pelos mais simples.
+Vamos começar pela tag.
+Lá iremos colocar nome e slug, o slug é como se fosse um texto que irá representar
+a tag em si na url, basicamente "id" disto. 
+Essa tag, iremos puxar pela slug dela. Por ser uma url, só irá ter letras e traços;
+
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(
+        unique=True,
+        default=None,
+        null=True,
+        blank=True,
+        max_length=255,
+    )
+
+Iremos usar a slug para buscar todas as tags, colocamos que o valor padrão dela
+será nenhum, que seria "Null", então iremos permitir null. Porém, quando o usuário
+for registrar isto, ele não precisa enviar uma slug, antes de explicar, vamos
+sobescrever o método save;
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = 'nova_slug'
+        
+        return super().save(*args,**kwargs)
+
+O que estamos fazendo aqui é que se a pessoa for enviar uma nova tag, o que iremos falar
+é que se a pessoa não tiver enviado um slug, iremos gerar uma nova slug.
+Primeiramente, vamos dentro do "utils" e criar algo chamado "rands.py" pois iremos
+gerar letras aleatórias.
+
+import string
+from random import SystemRandom
+
+
+def random_letters(k=5):
+    return SystemRandom().choices(
+        string.ascii_letters + string.digits
+    )
+
+O SystemRandom irá gerar algumas escolhas, iremos permitir letras com "ascii_letters"
+e digitos/números com "string.digits", o "k" do choices é a quantidade de elementos
+que iremos querer. Isso irá retornar uma lista com letras aleatórias.
+Mas, vamos transformar isso em uma string fazendo  o seguinte;
+
+    return ''.join(...)
+
+O django tem algo bem interessante que se chama slugify, se colocarmos;
+
+"slugfy('Olá mundo')" ele irá pegar isto, colocar a string de maneira minúscula,
+e irá juntar ambas com "-" transformando basicamente em uma url.
+
+def slugify_new(text):
+    return slugify(text) + '-' + random_letters(5)
+
+O '5' seria a letra aleatória. Podemos mudar algo no random;
+
+def random_letters(k=5):
+    return ''.join(SystemRandom().choices(
+        string.ascii_lowercase + string.digits,
+        k=k,
+    ))
+
+Assim, fica mais no padrão slug.
+
+Com a função criada, podemos importar isto.
+
+from utils.rands import slugify_new
+        if not self.slug:
+            self.slug = slugify_new(self.name)
+
+Ele irá pegar o "name" da tag usada.
+Podemos até mudar mais algo;
+
+def slugify_new(text, k=5):
+    return slugify(text) + '-' + random_letters(k)
+
+Assim dentro do model já pode controlar pelo slugfy new.
+Agora, vamos fazer o docker-compose up.
+Agora, vamos lá na admin do blog;
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = 'id', 'name', 'slug',
+    list_display_links = 'name'
+    search_fields = 'id', 'name', 'slug',
+    list_per_page = 10
+    ordering = '-id',
+    prepopulated_fields = {
+        "slug": ('name',),
+    }
+
+O prepopulated_fields significa que este campo "slug" irá pegar o valor do campo "name"
+irá permitir que quando colocar adicionar tag, e escrever algo no nome dela, o slug
+também irá escrever o que está lá.
+Agora, imagine que crie uma tag sem slug, pode ser salvo, mas logo ele irá gerar os
+nomes na tag.
