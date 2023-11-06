@@ -1,0 +1,19 @@
+Primeiramente, na aula 533 do curso, iremos copiar o que está dentro do styles.css.
+E depois o que está dentro do partials.
+Iremos criar certas páginas, já que vamos copiar tudo que está em partials, e em pages.
+Dentro do blog no caso.
+Tudo isto foi feito no html.
+
+A página inicial, é onde vamos ter vários posts. Já o post, é como irá ficar o post sozinho.
+No post, ele terá apenas uma categoria, porém vários tags. A tags, terá uma relação
+de muitos para muitos.
+
+A página é o local aonde será colocado apenas html, por exemplo, suponha que você
+queira uma página de sobre nós, aonde irá contar sua história.
+A página é de algo que terá apenas no menu.
+
+Outra coisa, vamos ir lá no views da aula, copiar, e colar em nossa views.
+
+Isso, seria o paginator apenas.
+
+O fontawesome foi de onde tiramos alguns símbolos.
