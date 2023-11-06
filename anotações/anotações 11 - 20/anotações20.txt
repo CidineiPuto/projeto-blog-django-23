@@ -1,0 +1,22 @@
+Post card é o cartão da página inicial, e _temp, é o arquivo temporário.
+Apesar de ter mudado várias coisas, todas elas, com excessão a paginação, foi usado
+só html e css.
+
+Na parte do css, possui algo chamado blog, que é algumas coisas, por exemplo;
+
+.blog-wrapper envolve praticamente tudo no site, já que no base.html. Possui a div
+com "class="blog-wrapper"". Esse display flex do wrapper, permite que você ordene isso
+em colunas. Por isso, ele dá possibilidade de escolher o filho, ex; "flexgrow:1"
+Empurrando a footer para baixo, por conta disto. Assim faz a footer ser forçada para baixo.
+Na maioria das seções tem coisas como "section-content-wide" ou "section-content-narrow"
+
+E depois como filho, eles possuem "section-gap".
+Possui um "sr-only" de maneira que a pessoa consiga ler certas coisas, normalmente
+pessoa que possui deficiência visual. Por exemplo, o search, não é possível ver nada
+escrito, porém, no html dele, dentro do "_header.html" é possível ver "search"
+escrito, e lá, é aonde será possível que a pessoa leia com leitor de tela o que está
+escrito.
+
+É recomendável pegar o css e recriar ele inteiro, de maneira que fique bom para você.
+E talvez, até mesmo o layout inteiro da página, seu html e tudo mais, para que crie seu
+próprio design.
