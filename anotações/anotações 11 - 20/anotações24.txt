@@ -1,0 +1,36 @@
+Vamos começar criando o model post.
+No post iremos ter o título, um breve resumo que seria o "excerpt" e logo em seguida
+o conteúdo.
+Já o cover, será a imagem capa do post.
+
+Será colocado o created at, e dentro dele o "auto_now_add" para caso o post for salvo,
+ele será adicionado automaticamente a data.
+O outro será updated_at que terá o "auto_now" Quando salvar o post, ele irá gerar
+uma nova data.
+
+Agora no post vamos fazer as relações, primeiro começando por category.
+Terá uma relação em que muitos posts pode haver dentro de uma categoria, logo
+a category será o pai do post.
+Na relação de tags e posts, o posts pode ter várias tags, e tags pode ter vários posts,
+por isso, de muitos para muitos.
+
+O created_by será uma foreign key do "User" do django. Um exemplo do related name, é
+que quando no header.html acessamos o "site_setup.menulink_set.all" o "menulink_set"
+no caso o set seria exatamente este related_name, então se mudar este campo, quando
+for acessar o usuário seria por exemplo;
+
+# user.post_set.all()
+
+Irá vir disso todos os posts deste usuário. Mas, assim tanto no updated_by tanto no
+created_by iria vir este mesmo comando, por isso teria que usar related_name para não
+ocorrer erro.
+Quando vier do user após o related_name, será assim;
+
+# user.post_created_by
+related_name = 'post_created_by'
+
+Agora, não irá mais ter o "set".
+
+Agora vamos lá no admin.
+
+Readonly fields são valores que não podem ser alterados, valores apenas para leitura.
