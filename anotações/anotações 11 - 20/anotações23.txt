@@ -1,0 +1,7 @@
+Agora criado category, iremos criar a classe page.
+A página fica por conta de nós para fazer algo, ela irá ser puramente html.
+Outra coisa que precisamos é colocar o método __str__.
+Agora iremos adicionar o page no admin do blog.
+E agora, iremos usar docker-compose up
+
+Agora, no model podemos informar para o usuário o que o is_published faz.
