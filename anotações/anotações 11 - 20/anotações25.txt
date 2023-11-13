@@ -1,0 +1,21 @@
+O updated by e created by possui algumas maneiras diferentes de o fazer.
+Uma delas é reefazer o método save, porém, quando o reescrever, toda vez
+que chamar este método, aquilo nele será executado.
+
+No admin, tem um método chamado save_model, temos neles uma request, o objeto que
+está sendo modificado, o form que está sendo usado e outra coisa que é o changed;
+
+    def save_model(self, request, obj, form, change):
+        print('Está alterando ?', change)
+        obj.save()
+
+O change mostra se houve alguma mudança, mas quando adiciona um novo post,
+ele irá retornar um "false". Já que o post foi acabado de ser criado.
+Então, é basicamente fazer apenas isso;
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            obj.updated_by = request.user
+        else:
+            obj.created_by = request.user
+        obj.save()
