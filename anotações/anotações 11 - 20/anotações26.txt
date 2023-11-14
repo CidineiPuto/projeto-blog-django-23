@@ -1,0 +1,24 @@
+Temos que redimensionar e otimizar uma imagem para não ficar tão grande e pesada
+no site.
+Temos que ver através do inspencionar, qual tamanho máximo de largura da imagem de
+dentro do post.
+No site setup em favicon já fizemos particamente isto.
+
+Após isso ser adicionado podemos até escolher a mudança da qualidade, exemplo;
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify_new(self.title, 4)
+
+        current_cover_name = str(self.cover.name)
+        super_save = super().save(*args, **kwargs)
+        cover_changed = False
+
+        if self.cover:
+            cover_changed = current_cover_name != self.cover.name
+
+        if cover_changed:
+            resize_image(self.cover, 900, optimize=True, quality=90) <--- Aqui a
+                                                a qualidade foi aumentada em 90%
+
+        return super_save
