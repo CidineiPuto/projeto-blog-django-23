@@ -22,7 +22,6 @@ class PostAttachment(AbstractAttachment):
         return super_save
 
 
-
 class Tag(models.Model):
     class Meta:
         verbose_name = 'Tag'
@@ -103,10 +102,17 @@ class Page(models.Model):
         return self.title
 
 
+class PostManager(models.Manager):
+    def get_published(self):  # self = objects
+        return self.filter(is_published=True).order_by('-pk')
+
+
 class Post(models.Model):
     class Meta:
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'
+
+    objects = PostManager()
 
     title = models.CharField(max_length=65)
     slug = models.SlugField(
@@ -128,7 +134,8 @@ class Post(models.Model):
     cover = models.ImageField(upload_to='posts/%Y/%m/', blank=True, default='')
     cover_in_post_content = models.BooleanField(
         default=True,
-        help_text='Exiba a imagem de capa também dentro do conteúdo do post, se marcado.',
+        help_text='Exiba a imagem de capa também dentro do conteúdo do post,\
+         se marcado.',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

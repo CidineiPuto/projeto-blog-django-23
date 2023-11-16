@@ -1,0 +1,22 @@
+Vamos criar nosso próprio manager, sabemos que o manager do nosso model é responsável
+por trabalhar na base de dados.
+
+Vamos repetir várias vezes o filter, e order_by por isso é melhor ter um método
+dentro de objects que faça isso, então vamos fazer isso com managers.
+
+No post, vamos criar um novo manager.
+
+O padrão seria 
+
+objects = models.Manager()
+
+Mas podemos extender ela.
+
+class PostManager(models.Manager):
+    def get_published(self):  # self = objects
+        return self.filter(is_published=True)
+
+
+class Post(models.Model):
+    objects = models.PostManager()
+
