@@ -1,0 +1,49 @@
+Vamos pegar os posts e fazer uma paginação neles.
+Vamos fazer isso em views.py.
+No index.html vamos mudar o for;
+
+        <div class="card-grid">
+          {% for post in page_obj %}
+            {% include 'blog/partials/_post-card.html' with i=forloop.counter0 %}
+          {% endfor %}
+        </div>
+
+Para fazer o cover que seria a imagem que aparece, vamos fazer isto;
+
+  {% if post.cover %}
+  <div class="card-cover-wrapper">
+    <a href="#" class="card-cover-link">
+      <img 
+        class="card-cover"
+        loading="lazy"
+        src='{{ post.cover.url }}'
+        alt="Change me"
+      >
+    </a>
+  </div>
+  {% endif %}
+
+O alt, iremos mudar ele, que seria tanto por acessibilidade, para descrever a imagem
+ali podemos colocar;
+
+cover do post {{ post.title }}
+Ainda não temos url no post, então temos que criar ela.
+
+Na url "urls.py" vamos adicionar isto;
+
+    path('post/<slug:slug>/', post, name='post'),
+
+Dentro do post card vamos  buscar pela url.
+
+    <a href="{% url 'blog:post' post.slug %}" class="card-cover-link">
+
+Agora vamos fazer o is published funcionar
+Dentro do views.py;
+
+    posts = (
+        Post
+        .objects
+        .filter(is_published=True)
+        .order_by('-pk')
+    )
+
