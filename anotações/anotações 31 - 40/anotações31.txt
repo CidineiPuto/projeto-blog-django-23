@@ -1,0 +1,62 @@
+Vamos criar a parte interna do post.
+
+Primeiro vamos receber slug na view do post e views.py;
+
+def post(request, slug):
+    post = (
+        Post.objects.get_published()  # type:ignore
+        .filter(slug=slug)
+        .first()
+    )
+
+    return render(
+        request,
+        'blog/pages/post.html',
+        {
+            'post': post
+        }
+    )
+
+Após essa alteração toda na view, vamos alterar algumas coisas no post.html.
+
+Loading lazy no html é algo que faz com que apenas exiba imagens que está no view port
+então se descer muito rápido em algum momento ele vai carregar as páginas.
+
+Nessa parte;
+
+              {% if post.created_by.first_name %}
+                {{ post.created_by.first_name }}
+                {{ post.created_by.last_name }}
+              {% else %}
+                {{ post.created_by.username }}
+              {% endif %}
+
+É recomendado termos um Primeiro e segundo nome, para não ser possível das pessoas
+ver nosso user.
+
+Vamos criar um created_by que seria os posts criados do autor.
+
+algo como "category__slug" quer dizer que da categoria está sendo puxado o campo
+de slug.
+
+Após certas criações, caso queira criar um post, pode pegar o shell do django
+e lá dentro do container fazer algo;
+
+docker-compose run --rm djangoapp python manage.py shell
+
+>>> from blog.models import Post
+>>> p = Post.objects.get_published()
+
+Aqui você pega todos os posts.
+
+>>> posts = p.first()
+>>> post.pk = None; post.slug = ''; post.save()
+
+Informa para o django que esse post não existe, mas como o slug tem que ser único
+teve que mudar algumas coisas.
+Então pode fazer;
+
+>>> for i in range(10): post.pk = None; post.slug = ''; post.save()
+
+10 novos posts foi feito.
+
