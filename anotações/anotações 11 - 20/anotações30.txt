@@ -1,0 +1,78 @@
+Imagine que vamos querer ter uma url para o post, dentro da área administrativa.
+Se por ventura, cairmos no lugar aonde não tem post, podemos fazer algo, dentro do index;
+
+        {% if page_obj %}
+            ...
+        {% else %}
+          <div class="center">
+            <h1>Nada encontrado</h1>
+            <p>
+              Não encontrei nada nesse link, por favor, clique em outro link do
+              nosso blog, ou vá para a <a href="{% url "blog:index" %}">home.</a>
+            </p>
+          </div>
+        {% endif %}
+
+Agora, sobreter uma url do post na área admin, primeiro vamos no admin.py do blog.
+
+    def link(self, obj):
+        return 'O link para o post'
+
+
+    readonly_fields = (
+        'created_at', 'updated_at', 'created_by', 'updated_by',
+        'link',
+    )
+
+Vamos fazer um if not dentro do def link, que será usado como "if not obj.pk"
+porém, vamos assumir que a slug exista.
+
+    def link(self, obj):
+        if not obj.pk:
+            return '-'
+
+        url_do_post = reverse('blog:post', args=(obj.slug,))
+
+        return f'<a target="_blank" href="{url_do_post}">{obj.title}</a>'
+
+Porém, o django não irá renderizar isso, por questão de segurança.
+
+        safe_link = mark_safe(
+            f'<a target="_blank" href="{url_do_post}">Ver post</a>'
+        )
+        return safe_link
+
+mark_safe veio do "from django.utils.safestring import mark_safe"
+
+No django podemos usar também o "get absolute url"
+se criarmos esse método dentro do model no post, podemos fazer o;
+
+
+    def get_absolute_url(self):
+        if not self.is_published:
+            return reverse('blog:index')
+        return reverse('blog:post', args=(self.slug,))
+
+Podemos usar isso, para ver o post também, e ver ele no site ainda.
+No post card, podemos mudar algo também;
+
+Vamos trocar todas as urls que irá puxar para o link do post, vamos usar este;
+
+{{ post.get_absolute_url }}
+
+ex;
+
+    <a href="{{ post.get_absolute_url }}" class="card-cover-link">
+
+Ele evita que ficamos repetindo o código também.
+Por isso, dentro do link;
+
+    def link(self, obj):
+        if not obj.pk:
+            return '-'
+
+        url_do_post = obj.get_absolute_url()
+        safe_link = mark_safe(
+            f'<a target="_blank" href="{url_do_post}">Ver post</a>'
+        )
+        return safe_link
