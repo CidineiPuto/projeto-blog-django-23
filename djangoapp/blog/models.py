@@ -156,7 +156,7 @@ class Post(models.Model):
         Category, on_delete=models.SET_NULL, null=True, blank=True,
         default=None,
     )
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag, blank=True, default=''
     )
 

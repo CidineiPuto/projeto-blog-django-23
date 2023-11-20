@@ -1,0 +1,53 @@
+Neste momento vamos configurar as tags, as tags são uma relação.
+
+No post.html, vamos tirar as tags de hard code.
+
+        {% if post.tags.exists %}
+        <div class="post-tags">
+          <span>Tags: </span>
+          
+          <a class="post-tag-link" href="#">
+            <i class="fa-solid fa-link"></i>
+            <span>{{ post.tag }}</span>
+          </a>
+        </div>
+        {% endif %}
+
+Vamos checar se existe tags.
+
+E agora vamos fazer um for.
+
+          {% for tag in post.tags.all %}
+          <a class="post-tag-link" href="#">
+            <i class="fa-solid fa-link"></i>
+            <p>{{ tag.name }}</p>
+          </a>
+          {% endfor %}
+
+Agora vamos criar uma link para tag, na urls.py do bog vamos duplicar a category,
+porém mudar o nome das coisas pro tag.
+
+    path('tag/<slug:slug>/', tag, name='tag'),
+
+E cria uma view para a tag;
+
+def tag(request, slug):
+    posts = (
+        Post.objects.get_published().filter(tags__slug=slug)  # type:ignore
+    )
+
+    paginator = Paginator(posts, PER_PAGE)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(
+        request,
+        'blog/pages/index.html',
+        {
+            'page_obj': page_obj,
+        }
+    )
+
+
+Agora podemos modificar o link;
+
+          <a class="post-tag-link" href="{% url "blog:tag" tag.slug %}">
