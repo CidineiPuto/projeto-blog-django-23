@@ -1,0 +1,25 @@
+vamos tentar exibir a data em outro formato/
+
+              {{ post.created_at | date:'Y'}}
+
+Y é o ano com 4 dígitos
+
+ano com 2 digitos é
+
+y
+
+Vamos pegar assim;
+
+              {{ post.created_at | date:'d/m/Y'}}
+
+dia / mês / ano
+
+E pode fazer;
+
+    d/m/Y /á/s H:i
+
+Irá mostrar "ás (hora, minuto)"
+
+Para mais coisas;
+
+https://docs.djangoproject.com/en/4.2/ref/templates/builtins/#date

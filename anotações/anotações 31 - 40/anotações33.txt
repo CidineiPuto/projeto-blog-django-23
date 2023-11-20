@@ -1,0 +1,31 @@
+O django não rederiza html por segurança.
+
+E para ser renderizado tem que informar para ele que isto é safe.
+
+
+      <p class="single-post-excerpt pb-base">
+        {{ post.excerpt | safe }}
+      </p>
+
+      <div class="separator"></div>
+
+      <div class="single-post-content">
+        {{ post.content | safe }}
+      </div>
+
+E é usado com " | safe"
+
+É recomendado não colocar um h1 na página.
+
+Vamos fazer ele alinhar imagens pequenas no meio;
+
+img {
+  margin-inline: 0 auto;
+}
+
+Assim as imagens ficam no meio.
+
+Outra coisa, é que dentro do codeview ele não irá colocar um alt para você por isso
+é recomendado usar o;
+
+    <img src="..." alt="alguma explicação">
