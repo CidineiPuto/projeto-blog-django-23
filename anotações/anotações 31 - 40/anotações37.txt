@@ -1,0 +1,37 @@
+Na page vamos puxar o get_absolute_url para ela, e trocar o "blog:page", ao invés do
+"blog post".
+
+No page, vamos usar praticamente a mesma view do post mudando apenas os nomes;
+
+def page(request, slug):
+
+    page = (
+        Page.objects.get_published()  # type:ignore
+        .filter(slug=slug)
+        .first()
+    )
+
+    return render(
+        request,
+        'blog/pages/page.html',
+        {
+            'page': page
+        }
+    )
+
+A diferença é que você pode fazer a criação de um manager para o page, ou simplesmente
+usar filter;
+
+    page = (
+        Page.objects
+        .filter(is_published=True)
+        .filter(slug=slug)
+        .first()
+    )
+
+E para funcionar vamos fazer isso na url do page;
+
+        <h1 class="center">{{ page.title }}</h1>
+        <p>{{ page.content | safe }}</p>
+
+A página é algo para ser usado como por exemplo, um "sobre mim".
