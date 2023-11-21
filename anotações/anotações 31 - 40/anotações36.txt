@@ -1,0 +1,66 @@
+Nesta anotação é da aula para criar o search.
+
+Primeiro iremos na view.
+
+    search_value = 'Qualquer'
+    posts = (
+        Post.objects.get_published().filter(
+            # Título contém search_value OU
+            # Excerto contém search_value OU
+            # Conteúdo contém search value
+        )
+    )
+
+Precisamos Ou o título ter search value, ou o Excerto ou o conteúdo.
+Vamos importar a class Q;
+
+from django.db.models import Q
+
+def search(request):
+    search_value = 'Qualquer'
+    posts = (
+        Post.objects.get_published().filter( # type: ignore;
+            Q(title__icontains=search_value) |
+            Q(excerpt__icontains=search_value) |
+            Q(content__icontains=search_value)
+        )
+    )
+
+Agora o "|" representa ou/or.
+
+Vamos entregar valor de apenas uma página, por isso vamos colocar um limite, na urls;
+
+    path('search/', search, name='search'),
+
+Vamos na header agora.
+
+Iremos mudar a action;
+
+    <form class="search-form" action="{% url 'blog:search' %}" method="get">
+e também o header.
+
+    value="{{ search_value }}"
+
+
+Agora, dentro do views;
+
+
+    search_value = request.GET.get('search', '').strip() <--
+    posts = (
+        Post.objects.get_published().filter(  # type:ignore ;
+            Q(title__icontains=search_value) |
+            Q(excerpt__icontains=search_value) |
+            Q(content__icontains=search_value)
+        )[0:PER_PAGE] <--
+    )
+    
+    return render(
+        request,
+        'blog/pages/index.html',
+        {
+            'page_obj': posts,
+            'search_value': search_value, <--
+        }
+    )
+
+
