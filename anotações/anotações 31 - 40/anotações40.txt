@@ -1,0 +1,114 @@
+Vamos utilizar nossa primeira class based views;
+
+https://docs.djangoproject.com/pt-br/4.2/ref/class-based-views/
+
+Quando vamos querer ver algo na tela algo, iremos usar views da exibição genérica.
+Nosso index é uma LISTA então por isso podemos usar um ListView para vários objetos.
+
+Primeiramente vamos importar isto;
+
+from django.views.generic import ListView
+
+Não é necessário importar o ".list" que fica após o generic, já que a maioria das
+classes estarão no generic. Já que generic seriam as próprias views genéricas.
+
+Nunca apague sua function based view, se a outra view ainda não funciona direito.
+Só pode apagar quando a outra realmente funcionar tudo perfeitamente.
+
+Vamos criar nossa classe;
+
+class PostListView(ListView):
+    ...
+
+E vamos lá na url para colocar ela.
+
+No path iriámos precisar de um calable só que isso não possui na classe, porém,
+dentro da classe possui uma function com nome de "as_view()" e esse método retorna
+um calable que retorna um http response
+
+    path('', PostListView.as_view(), name='index'),
+
+Pode até passar coisas lá dentro do "as_view" caso queira.
+
+Vamos primeiro indicar ao nosso class based view, qual model que estamos utilizando
+e depois, qual o nome do template ( é sempre recomendável não usar os nomes padrões
+do django ).
+
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/pages/index.html'
+
+O template name no aso, seria a maneira de puxar nossa url.
+
+class PostListView(ListView):
+    model = Post
+    template_name = 'blog/pages/index.html'
+    context_object_name = 'posts'
+    ordering = '-pk',
+    paginate_by = PER_PAGE
+
+
+Definimos que a order seria "-pk" e o paginate_by que seria do próprio Paginator
+que é a classe padrão de paginator,
+
+paginator_class = Paginator
+
+Definimos que ela possui "paginate_by = 9"
+logo, possui 9 posts por vez. E nosso context possui o nome de "posts".
+
+Se quisessemos manipular o context, poderiamos usar;
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+Na teoria, não fizemos nada por enquanto.
+
+Se dermos um print no context;
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print()
+        print()
+        print()
+        print(context)
+        print()
+        print()
+        print()
+        return context
+
+Podemos ver os posts, e conseguimos ver que dentro da paginação possui um "page_obj"
+algo que deu conflito com o nosso page_obj por isso foi trocado por "posts".
+E lá também vem por padrão o object_list como a lista de posts. E por termos colocado
+context_object_name = 'posts' ele usa o object list com esse nome, e o mesmo puxa
+uma query set que estaria a lista dos posts.
+
+Aliás no template de pagination, ao invés de usarmos;
+
+{% if page_obj and page_obj.has_other_pages %}
+
+Podemos usar apenas;
+
+{% if is_paginated %}
+
+É possível fazer update no context;
+
+    def get_context_data(self, **kwargs)
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'page_title': 'Home - ',
+        })
+        return context
+
+E agora para ordernar;
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_published=True)
+        return queryset
+
+Ou podemos fazer isto;
+
+    queryset = Post.objects.get_published()  # type: ignore
+
+Que seria exatamente a mesma coisa;
