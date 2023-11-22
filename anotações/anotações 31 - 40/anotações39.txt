@@ -1,0 +1,59 @@
+Vamos transformar nossas function based views, para class based views.
+
+Se você não precisar de nenhuma lógica na views, ela apenas pegar os dados e jogar
+para o render, pode ser usada function based views.
+
+Quando começa a usar if por exemplo, para caso for post fazer uma coisa e caso
+for get fazer outra coisa. É melhor utilizar uma class based views.
+Se a view tiver bastante lógica, e começa a repetir muitos códigos, talvez seja agradável
+usar a class based view para repassar o código para outras views que for utilizar aquilo.
+
+https://docs.djangoproject.com/pt-br/4.2/ref/class-based-views/
+
+Essa é a documentação da class based views.
+
+Primeira coisa vamos ver o que nossa function faz, pode ser o index;
+
+def index(request):
+    posts = Post.objects.get_published()  # type:ignore
+
+    paginator = Paginator(posts, PER_PAGE)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(
+        request,
+        'blog/pages/index.html',
+        {
+            'page_obj': page_obj,
+            'page_title': 'Home - ',
+        }
+    )
+
+Posts está obtendo dados do model.
+Esses dados são uma LISTA.
+
+Se for obter uma lista de valores pode usar uma "ListView" se for obter apenas um objeto
+pode ser usado um "DetailView".
+
+Nossa página precisa de paginação, e nas class based views a paginação já vem pronta
+praticamente. Além da paginação, ela está renderizando um template, logo o class Based
+que formos utilizar precisar também renderizar um template. E vamos manipular o contexto
+então temos que ter acesso ao template.
+
+A ListView já irá buscar uma lista de objetos e ela vai ter um self.object_list que
+irá ter essa lista.
+
+Os acenstrais dela, serão a própria View base, depois uma "MultipleObjectMixin"
+para adicionar funcionalidades. Ela herda de baselistview também, e etc. Cada uma irá
+trazer um método.
+Pode entrar em cada um dos métodos para fazer certa ação.
+
+Cada método possui uma funcionalidade, por isso é recomendado ver na documentação
+o que cada um faz.
+
+O dispatch por exemplo, é um método que vê qual resposta HTTP está usando, se for
+POST ele irá enviar a um "post()" se for GET ele irá enviar a um "get()". Ele
+despacha ao método correto baseado nos métodos https.
+
+Geralmente só precisa sobescrever as coisas do get_queryset() para a própria queryset
+no caso uma lista, e a get_context_data() para sobescrever o context do nosso method.
