@@ -1,0 +1,60 @@
+Vamos criar os títulos do nosso blog.
+Vamos no head e colocar no title;
+
+{{ page title }}
+
+Agora vamos injetar nas request do post e do page, dentro da view.
+
+Após injetar um;
+
+            'page_title': 'Home - ',
+
+Em todos os request, podemos arrumar de maneira certa cada.
+No created by vamos fazer essas importações;
+
+from django.contrib.auth.models import User
+from django.http import Http404
+
+Depois, vamos usar elas;
+
+    user = User.objects.filter(pk=author_pk).first()
+    if user is None:
+        raise Http404()
+
+    user_full_name = user.username
+
+    if user.first_name:
+        user_full_name = f'{user.first_name} {user.last_name}'
+    page_title = user_full_name + ' posts - '
+    return render(
+        {
+            'page_title': f'{user_full_name} - ',
+        }
+    )
+
+Isso dentro da views de created by.
+Agora em category;
+
+    if len(page_obj) == 0:
+        raise Http404()
+
+    page_title = f'Categoria - {page_obj[0].category.name}'
+
+Na tags;
+
+    if len(page_obj) == 0:
+        raise Http404()
+
+    page_title = f'Tag - {page_obj[0].tags.filter(slug=slug).first().name} - '
+
+Lembra que pode ter mais de uma tag, por isso é recomendável filtra pelo slug
+para depois pegar a ".first()" e por ser uma relação de muitos com muitos não é possível
+usar "tags[0]" igual foi usado no category.
+Page e post já é bem parecido;
+
+    if page is None:
+        raise Http404()
+
+    page_title = f'Página - {page.title} - '
+
+A mesma coisa é feita com o post.
