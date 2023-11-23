@@ -1,0 +1,51 @@
+Vamos fazer o padrão de adicionar no url, a class based view do search.
+
+class SearchListView(PostListView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._search_value = ''
+
+    def setup(self, request, *args, **kwargs):
+        self._search_value = request.GET.get('search', '').strip()
+        return super().setup(request, *args, **kwargs)
+
+No search list, usamos esse self.search_value para tudo, por isso salvamos ele no
+init, o "setup" é como se fosse um "init" de uma class based view, ela recebe
+request e por isso podemos usar ela para configurar nosso "_search_value".
+Já o query set e o context data não é nada diferente;
+
+    def get_queryset(self):
+        search_value = self._search_value
+        return super().get_queryset().filter(  # type:ignore ;
+            Q(title__icontains=search_value) |
+            Q(excerpt__icontains=search_value) |
+            Q(content__icontains=search_value)
+        )[0:PER_PAGE]
+
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        page_title = f'Search - {self._search_value[:30]} - '
+        ctx_super.update({
+            'search_value': self._search_value,
+            'page_title': page_title,
+        })
+        return ctx_super
+
+Vamos usar o get caso a pessoa não coloque nada no search, apenas espaço.
+    def get(self, request, *args, **kwargs):
+        if self._search_value == '':
+            return redirect('blog:index')
+        return super().get(request, *args, **kwargs)
+
+Uma forma é ir lá no html do "_header" e colocar required no search;
+
+              <input
+                class="search-input"
+                type="search"
+                name="search"
+                id="search-input"
+                placeholder="Search"
+                value="{{ search_value }}"
+                required
+              >
+

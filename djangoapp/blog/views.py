@@ -5,9 +5,8 @@ from blog.models import Page, Post
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic import ListView
 
 PER_PAGE = 9
@@ -103,7 +102,7 @@ class CategoryListView(PostListView):
     def get_context_data(self, **kwargs):
         ctx_super = super().get_context_data(**kwargs)
         page_title = (
-            f'Categoria - {self.object_list[0].category.name} - '  # type: ignore
+           f'Categoria - {self.object_list[0].category.name} - '  # type:ignore
         )
         ctx_super.update({
             'page_title': page_title
@@ -124,9 +123,10 @@ class TagListView(PostListView):
 
     def get_context_data(self, **kwargs):
         ctx_super = super().get_context_data(**kwargs)
+        tag_slug = self.kwargs.get('slug')
         filtered_tag = (
-            self.object_list[0].tags
-            .filter(slug=self.kwargs.get('slug')).first().name
+            self.object_list[0]  # type:ignore
+            .tags.filter(slug=tag_slug).first().name
         )
         page_title = (
             f'Tag - {filtered_tag} - '  # type: ignore
@@ -142,27 +142,37 @@ class TagListView(PostListView):
         )
 
 
-def search(request):
-    search_value = request.GET.get('search', '').strip()
-    posts = (
-        Post.objects.get_published().filter(  # type:ignore ;
+class SearchListView(PostListView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._search_value = ''
+
+    def setup(self, request, *args, **kwargs):
+        self._search_value = request.GET.get('search', '').strip()
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if self._search_value == '':
+            return redirect('blog:index')
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        search_value = self._search_value
+        return super().get_queryset().filter(  # type:ignore ;
             Q(title__icontains=search_value) |
             Q(excerpt__icontains=search_value) |
             Q(content__icontains=search_value)
         )[0:PER_PAGE]
-    )
 
-    page_title = f'Search - {search_value[:30]} - '
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'posts': posts,
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        search_value = self._search_value
+        page_title = f'Search - {search_value[:30]} - '
+        ctx_super.update({
             'search_value': search_value,
             'page_title': page_title,
-        }
-    )
+        })
+        return ctx_super
 
 
 def page(request, slug):
