@@ -1,0 +1,23 @@
+Já a tag é bem semelhante da category;
+    allow_empty = False
+
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        filtered_tag = (
+            self.object_list[0].tags
+            .filter(slug=self.kwargs.get('slug')).first().name
+        )
+        page_title = (
+            f'Tag - {filtered_tag} - '  # type: ignore
+        )
+        ctx_super.update({
+            'page_title': page_title
+        })
+        return ctx_super
+
+    def get_queryset(self):
+        return (
+            super().get_queryset().filter(tags__slug=self.kwargs.get('slug'))
+        )
+
+Aqui também usamos o allow_empty.

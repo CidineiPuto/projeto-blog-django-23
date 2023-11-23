@@ -5,6 +5,7 @@ from blog.models import Page, Post
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.http import Http404
 from django.shortcuts import render
 from django.views.generic import ListView
@@ -102,7 +103,7 @@ class CategoryListView(PostListView):
     def get_context_data(self, **kwargs):
         ctx_super = super().get_context_data(**kwargs)
         page_title = (
-            f'Categoria - {self.object_list[0].category.name}'  # type: ignore
+            f'Categoria - {self.object_list[0].category.name} - '  # type: ignore
         )
         ctx_super.update({
             'page_title': page_title
@@ -118,28 +119,27 @@ class CategoryListView(PostListView):
         return qs
 
 
-def tag(request, slug):
-    posts = (
-        Post.objects.get_published().filter(tags__slug=slug)  # type:ignore
-    )
+class TagListView(PostListView):
+    allow_empty = False
 
-    paginator = Paginator(posts, PER_PAGE)
-    page_number = request.GET.get("page")
-    posts = paginator.get_page(page_number)
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        filtered_tag = (
+            self.object_list[0].tags
+            .filter(slug=self.kwargs.get('slug')).first().name
+        )
+        page_title = (
+            f'Tag - {filtered_tag} - '  # type: ignore
+        )
+        ctx_super.update({
+            'page_title': page_title
+        })
+        return ctx_super
 
-    if len(posts) == 0:
-        raise Http404()
-
-    page_title = f'Tag - {posts[0].tags.filter(slug=slug).first().name} - '
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'posts': posts,
-            'page_title': page_title,
-        }
-    )
+    def get_queryset(self):
+        return (
+            super().get_queryset().filter(tags__slug=self.kwargs.get('slug'))
+        )
 
 
 def search(request):
