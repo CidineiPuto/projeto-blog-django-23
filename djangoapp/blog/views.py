@@ -4,10 +4,11 @@ from typing import Any
 from blog.models import Page, Post
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+from django.db import models
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import redirect, render
-from django.views.generic import ListView
+from django.views.generic import DetailView, ListView
 
 PER_PAGE = 9
 
@@ -175,27 +176,25 @@ class SearchListView(PostListView):
         return ctx_super
 
 
-def page(request, slug):
+class PageDetailView(DetailView):
+    model = Page
+    template_name = 'blog/pages/page.html'
+    slug_field = 'slug'
+    context_object_name = 'page'
 
-    posts = (
-        Page.objects.get_published()  # type:ignore
-        .filter(slug=slug)
-        .first()
-    )
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
 
-    if posts is None:
-        raise Http404()
+        page = self.get_object()
+        page_title = f'Página - {page.title} - '  # type:ignore
+        ctx.update({
+            'page_title': page_title
+        })
 
-    page_title = f'Página - {posts.title} - '
+        return ctx
 
-    return render(
-        request,
-        'blog/pages/page.html',
-        {
-            'page': posts,
-            'page_title': page_title,
-        }
-    )
+    def get_queryset(self):
+        return super().get_queryset().filter(is_published=True)
 
 
 def post(request, slug):
