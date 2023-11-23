@@ -1,0 +1,24 @@
+Agora vamos fazer a category list view.
+Primeiro na query set precisamos apenas do filtro.
+
+    allow_empty = False
+
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .filter(category__slug=self.kwargs.get('slug'))
+        )
+        return qs
+
+E no contex data vamos pegar o título da página. Alias, usamos um allow_empty = False,
+assim, quando não tiver objetos na página irá retornar um 404.
+
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        page_title = f'Categoria - {self.object_list[0].category.name}'
+        ctx_super.update({
+            'page_title': page_title
+        })
+        return ctx_super
+

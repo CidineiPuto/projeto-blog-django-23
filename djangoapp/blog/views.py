@@ -96,28 +96,26 @@ class CreatedByListView(PostListView):
         return qs
 
 
-def category(request, slug):
-    posts = (
-        Post.objects.get_published().filter(category__slug=slug)  # type:ignore
-    )
+class CategoryListView(PostListView):
+    allow_empty = False
 
-    paginator = Paginator(posts, PER_PAGE)
-    page_number = request.GET.get("page")
-    posts = paginator.get_page(page_number)
+    def get_context_data(self, **kwargs):
+        ctx_super = super().get_context_data(**kwargs)
+        page_title = (
+            f'Categoria - {self.object_list[0].category.name}'  # type: ignore
+        )
+        ctx_super.update({
+            'page_title': page_title
+        })
+        return ctx_super
 
-    if len(posts) == 0:
-        raise Http404()
-
-    page_title = f'Categoria - {posts[0].category.name}'
-
-    return render(
-        request,
-        'blog/pages/index.html',
-        {
-            'posts': posts,
-            'page_title': page_title,
-        }
-    )
+    def get_queryset(self):
+        qs = (
+            super()
+            .get_queryset()
+            .filter(category__slug=self.kwargs.get('slug'))
+        )
+        return qs
 
 
 def tag(request, slug):
