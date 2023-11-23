@@ -1,0 +1,23 @@
+Agora só fazer o post detail view.
+O post detail view é algo bem semelhante ao page.
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/pages/post.html'
+    context_object_name = 'post'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        post = self.get_object()
+        page_title = f'Post - {post.title} - '  # type:ignore
+        ctx.update({
+            'page_title': page_title
+        })
+
+        return ctx
+
+    def get_queryset(self):
+        return super().get_queryset().filter(is_published=True)
+
+O slug_field já possui nome padrão de slug então não precisa ser colocado.
