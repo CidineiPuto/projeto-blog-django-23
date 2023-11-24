@@ -21,3 +21,8 @@ class PostDetailView(DetailView):
         return super().get_queryset().filter(is_published=True)
 
 O slug_field já possui nome padrão de slug então não precisa ser colocado.
+
+Lembre que class based views não vale muito a pena para coisas simples.
+E pode usar o doc dele para ver mais class based views.
+
+https://docs.djangoproject.com/pt-br/4.2/ref/class-based-views/
