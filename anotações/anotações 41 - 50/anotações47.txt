@@ -1,0 +1,78 @@
+Temos que usar dotenv e django axes para segurança do sistema.
+Iremos precisar do dotenv para que carregue ele dentro do servidor quando
+subirmos a aplicação do django.
+Podemos usar o "python dotenv" para isto.
+
+pip install python-dotenv
+pip install django-axes
+
+Vamos no requirements.txt e adicionar as versões.
+
+python-dotenv>=1.0.0,<1.1
+django-axes>=6.0.1,<6.1
+
+Agora temos que recompilar nosso docker;
+
+    docker-compose up --build --remove-orphans --renew-anon-volumes --force-recreate
+
+Em settings do project vamos importar;
+
+from dotenv import load_dotenv
+E vamos colocar aonde fica nossa pasta de .env;
+
+# DOTENV
+load_dotenv(BASE_DIR.parent / 'dotenv_files' / '.env')
+
+Lembre que estaremos em project por isso usamos ainda .parent, já que o BASE_DIR
+irá ser a pasta do "djangoapp".
+
+Uma coisa que é bom colocar no dotenv é que se já existir algo definido no servidor
+podemos sobescrever o valor dela;
+
+load_dotenv(..., override=True)
+
+Também temos que carregar no wsgi já que estamos utilizando ele no nginx,
+claro que se tiver utilizando asgi terá que fazer isto nele.
+
+    from dotenv import load_dotenv
+    from pathlib import Path
+
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    load_dotenv(BASE_DIR.parent / 'dotenv_files' / '.env', override=True)
+
+Sobre o axes, temos que ir no settings em installed apps e colocar ele lá em qualquer
+que seja a posição.
+E vamos configurar nosso authentication backends;
+
+AUTHENTICATION_BACKENDS = [
+    # AxesStandaloneBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
+    'axes.backends.AxesStandaloneBackend',
+
+    # Django ModelBackend is the default authentication backend.
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+Em middlewares vamos colocar em ÚLTIMO o middleware do axes;
+
+    'axes.middleware.AxesMiddleware',
+
+Agora vamos usar;
+
+docker-compose run --rm djangoapp python manage.py check
+docker-compose run --rm djangoapp python manage.py migrate
+
+E ainda no settings.py vamos configurar nosso axes
+
+https://django-axes.readthedocs.io/en/latest/4_configuration.html
+
+Aí está algumas configurações, porém, vamos colocar essas;
+
+AXES_ENABLED = True
+AXES_FAILURE_LIMIT = 2
+AXES_COOLOFF_TIME = 1 # 1 Hora
+AXES_RESET_ON_SUCESS = True
+
+Eu escolhi o failure time como 2 tentativas mas pode escolher quantas quiser.
+Para desbloquear alguém;
+
+docker-compose run --rm djangoapp python manage.py axes_reset
